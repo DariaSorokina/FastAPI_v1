@@ -1,92 +1,65 @@
-import React, { useState } from 'react';
-import {
-  AppstoreOutlined,
-  ContainerOutlined,
-  DesktopOutlined,
-  MailOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  PieChartOutlined,
-} from '@ant-design/icons';
-import { Button, Menu } from 'antd';
-const items = [
-  {
-    key: '1',
-    icon: <ContainerOutlined />,
-    label: 'Option 1',
-  },
-  {
-    key: '2',
-    icon: <DesktopOutlined />,
-    label: 'Option 2',
-  },
-  {
-    key: '3',
-    icon: <ContainerOutlined />,
-    label: 'Option 3',
-  },
-    {
-    key: '4',
-    icon: <ContainerOutlined />,
-    label: 'olkjhygff',
-  },
-  {
-    key: '5',
-    icon: <MailOutlined />,
-    label: 'olkjhyg',
-  },
 
-];
-const App = () => {
-  const [collapsed, setCollapsed] = useState(false);
-  const toggleCollapsed = () => {
-    setCollapsed(!collapsed);
-  };
 
- const fetchCurrencies = (): void => {
-    axios.get('http://127.0.0.1:8000/api/v1/acters/').then(r => {
-      const currenciesResponse = r.data
-      const menuItems = [
-        getItem('Список криптовалют', 'g1', null,
-          currenciesResponse.map(c => {
-            return {label: c.name, key: c.id}
-          }),
-          'group'
-        )
-      ]
-      setCurrencies(menuItems)
-    })
-  }
+Copy
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
- useEffect(() => {
-    fetchCurrencies()
+function App() {
+  const [posters, setPosters] = useState([]);
+  const [shows, setShows] = useState([]);
+  const [acters, setActers] = useState([]);
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    axios.get('http://127.0.0.1:8000/api/v1/products/').then(response => setPosters(response.data));
+    axios.get('http://127.0.0.1:8000/api/v1/show/').then(response => setShows(response.data));
+    axios.get('http://127.0.0.1:8000/api/v1/acters/').then(response => setActers(response.data));
+    axios.get('http://127.0.0.1:8000/api/v1/products/').then(response => setProducts(response.data));
   }, []);
 
 
   return (
-    <div
-      style={{
-        width: 256,
-      }}
-    >
-      <Button
-        type="primary"
-        onClick={toggleCollapsed}
-        style={{
-          marginBottom: 16,
-        }}
-      >
-        {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-      </Button>
-      <Menu
-        defaultSelectedKeys={['1']}
-        defaultOpenKeys={['sub1']}
-        mode="inline"
-        theme="dark"
-        inlineCollapsed={collapsed}
-        items={items}
-      />
+    <div className="App">
+      <h1>Афиши</h1>
+      <ul>
+        {posters.map(poster => (
+          <li key={poster.id}>{poster.name_poster}</li>
+        ))}
+      </ul>
+
+      <h2>Спектакли</h2>
+      <ul>
+        {shows.map(show => (
+          <li key={show.id}>{show.name_show}</li>
+        ))}
+      </ul>
+
+      <h2>Актеры</h2>
+      <ul>
+        {acters.map(acter => (
+          <li key={acter.id}>{acter.name}</li>
+        ))}
+      </ul>
+
+      <h2>Цены на билеты</h2>
+      <ul>
+        {products.map(product => (
+          <li key={product.id}>{product.name_show} - {product.price} руб.</li>
+        ))}
+      </ul>
+
+      <div>
+        <input type="number" placeholder="ID спектакля" id="showId" />
+        <input type="number" placeholder="Цена" id="price" />
+        <input type="number" placeholder="ID актера" id="acterId" />
+        <button onClick={() => handleBuyTicket(
+          document.getElementById('showId').value,
+          document.getElementById('price').value,
+          document.getElementById('acterId').value
+        )}>Купить билет</button>
+      </div>
     </div>
   );
-};
+}
+
 export default App;

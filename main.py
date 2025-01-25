@@ -1,12 +1,8 @@
 from contextlib import asynccontextmanager
-
-import uvicorn
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
-
 from core.config import settings
-from core.models import Base, db_helper
 from api_v1 import router as router_v1
-
 from fastapi import FastAPI
 from fastapi.openapi.docs import (
     get_redoc_html,
@@ -71,6 +67,22 @@ def my_schema():
 
 
 app.openapi = my_schema
+
+
+
+origins = [
+    "http://localhost:5173/",
+    "http://127.0.0.1:5173/",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 
 @app.get("/users/{id}")

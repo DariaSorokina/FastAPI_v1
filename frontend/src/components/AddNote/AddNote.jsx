@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useContext, FormEvent } from "react";
+import { useState, useEffect, useRef, useContext, FormEvent, FormEventHandler } from "react";
 import axios from "axios";
 
 import "./AddNote.styles.css";
@@ -14,15 +14,14 @@ export default function AddNote() {
 
   const setActers = useContext(NotesListUpdateFunctionContext);
 
-  const titleInputRef = useRef<HTMLInputElement>({} as HTMLInputElement);
+  const titleInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     titleInputRef.current.focus();
   }, []);
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
+  const handleSubmit = async (e: React.FormEvent) => {
+     e.preventDefault();
     if (name.length > 0 || show.length > 0) {
       setIsFormSubmitting(true);
       const API_URL = import.meta.env.VITE_NOTES_API_URL;
@@ -36,7 +35,6 @@ export default function AddNote() {
     } else {
       setHasInputError(true);
     }
-
     setName("");
     setShow("");
     setGender("");
@@ -61,36 +59,44 @@ export default function AddNote() {
       />
       <input
         type="text"
-        placeholder="Enter Name"
+        placeholder="Enter Show"
         ref={titleInputRef}
-        id="name-input"
+        id="show-input"
         className={hasInputError ? "input-error" : ""}
-        value={name}
+        value={show}
         onChange={(event) => {
           setHasInputError(false);
-          setName(event.target.value);
+          setShow(event.target.value);
         }}
       />
-
-
-
-
-
-
-      <textarea
-        placeholder="Enter Note"
-        id="note-body-textarea"
+      />
+      <input
+        type="text"
+        placeholder="Enter Gender"
+        ref={titleInputRef}
+        id="gender-input"
         className={hasInputError ? "input-error" : ""}
-        cols={30}
-        rows={10}
-        value={noteBody}
+        value={gender}
         onChange={(event) => {
           setHasInputError(false);
-          setNoteBody(event.target.value);
+          setGender(event.target.value);
+        }}
+      />
+      />
+      <input
+        type="text"
+        placeholder="Enter Part"
+        ref={titleInputRef}
+        id="part-input"
+        className={hasInputError ? "input-error" : ""}
+        value={part}
+        onChange={(event) => {
+          setHasInputError(false);
+          setPart(event.target.value);
         }}
       />
       <button id="add-note-btn" type="submit" disabled={isFormSubmitting}>
-        {isFormSubmitting ? "..." : "Add Note"}
+        {isFormSubmitting ? "..." : "Add Note_2"}
       </button>
     </form>
   );

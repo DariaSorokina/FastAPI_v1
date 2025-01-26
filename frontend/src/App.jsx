@@ -1,65 +1,39 @@
+import {
+  useState,
+  useEffect,
+  createContext,
+  Dispatch,
+  SetStateAction,
+} from "react";
+import axios from "axios";
 
+import AddNote from "./components/AddNote";
+import NotesList from "./components/NotesList";
 
-Copy
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import "./App.css";
+import "./utility.styles.css";
 
-function App() {
-  const [posters, setPosters] = useState([]);
-  const [shows, setShows] = useState([]);
+export const NotesListUpdateFunctionContext = createContext(null);
+
+export default function App() {
   const [acters, setActers] = useState([]);
-  const [products, setProducts] = useState([]);
-
   useEffect(() => {
-    axios.get('http://127.0.0.1:8000/api/v1/products/').then(response => setPosters(response.data));
-    axios.get('http://127.0.0.1:8000/api/v1/show/').then(response => setShows(response.data));
-    axios.get('http://127.0.0.1:8000/api/v1/acters/').then(response => setActers(response.data));
-    axios.get('http://127.0.0.1:8000/api/v1/products/').then(response => setProducts(response.data));
+    const getActers = async () => {
+			// The URL of the backend
+			// you can specify your own if you have a different one
+      const API_URL = "http://127.0.0.1:8000";
+      const { data } = await axios.get(`${API_URL}/api/v1/acters`);
+      setActers(data);
+    };
+    getActers();
   }, []);
-
-
   return (
-    <div className="App">
-      <h1>Афиши</h1>
-      <ul>
-        {posters.map(poster => (
-          <li key={poster.id}>{poster.name_poster}</li>
-        ))}
-      </ul>
-
-      <h2>Спектакли</h2>
-      <ul>
-        {shows.map(show => (
-          <li key={show.id}>{show.name_show}</li>
-        ))}
-      </ul>
-
-      <h2>Актеры</h2>
-      <ul>
-        {acters.map(acter => (
-          <li key={acter.id}>{acter.name}</li>
-        ))}
-      </ul>
-
-      <h2>Цены на билеты</h2>
-      <ul>
-        {products.map(product => (
-          <li key={product.id}>{product.name_show} - {product.price} руб.</li>
-        ))}
-      </ul>
-
+    <NotesListUpdateFunctionContext.Provider value={setActers}>
       <div>
-        <input type="number" placeholder="ID спектакля" id="showId" />
-        <input type="number" placeholder="Цена" id="price" />
-        <input type="number" placeholder="ID актера" id="acterId" />
-        <button onClick={() => handleBuyTicket(
-          document.getElementById('showId').value,
-          document.getElementById('price').value,
-          document.getElementById('acterId').value
-        )}>Купить билет</button>
+        <h1 id="app-title">Acters App</h1>
+        <AddNote />
+        <NotesList acters={acters} />
       </div>
-    </div>
+    </NotesListUpdateFunctionContext.Provider>
   );
 }
-
-export default App;
